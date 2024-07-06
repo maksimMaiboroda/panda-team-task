@@ -1,81 +1,122 @@
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+    <div class="app-wrapper">
+        <header>
+            <nav>
+                <h1>Weather App</h1>
+            </nav>
+        </header>
+        <main>
+            <div class="tabs">
+                <button
+                    @click="setActiveTab('weather')"
+                    :class="{ active: activeTab === 'weather', 'weather-tab': true }"
+                >
+                    Weather
+                </button>
+                <button
+                    @click="setActiveTab('favorites')"
+                    :class="{ active: activeTab === 'favorites', 'favorite-tab': true }"
+                >
+                    Favorites
+                </button>
+            </div>
+            <div class="container">
+                <WeatherBlocks v-if="activeTab === 'weather'" :defaultCity="defaultCity" />
+                <FavoritesTab v-if="activeTab === 'favorites'" />
+            </div>
+        </main>
     </div>
-  </header>
-
-  <main>
-    <!-- <TheWelcome /> -->
-    <div class="weather-card">
-      <div v-if="loading" class="loading">Loading...</div>
-
-      <div v-if="error" class="error">{{ error }}</div>
-
-      <div v-if="forecast" class="content">
-        {{ forecast }}
-        <!-- <h2>{{ forecast.title }}</h2>
-            <p>{{ forecast.body }}</p> -->
-      </div>
-    </div>
-  </main>
 </template>
 
-<script setup>
-import { ref, watch } from 'vue'
-// import { useRoute } from 'vue-router'
-import { getWeatherByCity } from './api'
+<script>
+import { ref, onMounted } from 'vue'
+import { useWeatherStore } from './stores/weather'
+import WeatherBlocks from './components/WeatherBlocks.vue'
+import FavoritesTab from './components/FavoritesTab.vue'
 
-// const route = useRoute()
+export default {
+    name: 'App',
+    components: {
+        WeatherBlocks,
+        FavoritesTab
+    },
+    setup() {
+        const weatherStore = useWeatherStore()
+        const activeTab = ref('weather')
+        const defaultCity = ref(null)
 
-const loading = ref(false)
-const forecast = ref(null)
-const error = ref(null)
+        onMounted(() => {
+            weatherStore.loadFromLocalStorage()
+        })
 
-// watch(() => route.params.id, fetchData, { immediate: true })
-watch(() => {}, fetchData, { immediate: true })
+        const setActiveTab = (tab) => {
+            activeTab.value = tab
+        }
 
-async function fetchData() {
-  error.value = forecast.value = null
-  loading.value = true
-
-  try {
-    forecast.value = await getWeatherByCity()
-  } catch (err) {
-    error.value = err.toString()
-  } finally {
-    loading.value = false
-  }
+        return {
+            activeTab,
+            setActiveTab,
+            defaultCity
+        }
+    }
 }
 </script>
 
-<style scoped>
+<style>
+.app-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 header {
-  line-height: 1.5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f0f0f0;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: #729096;
+    display: flex;
+    justify-content: center;
+    padding: 20px 10px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.tabs {
+    position: absolute;
+    top: -15px;
+    left: 30px;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.tabs button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.tabs button.active {
+    background-color: #aaa;
+    color: white;
+}
+
+.weather-tab {
+    border-top-left-radius: 5px;
+}
+
+.favorite-tab {
+    border-top-right-radius: 5px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
 }
 </style>
