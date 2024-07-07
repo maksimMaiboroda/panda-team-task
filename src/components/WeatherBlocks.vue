@@ -81,27 +81,30 @@ export default defineComponent({
 
         onMounted(() => {
             weatherStore.loadFromLocalStorage()
-            fetchDefaultCity()
         })
 
-        watchEffect(() => {
+        watchEffect(async () => {
             if (currentLocal.value) {
                 locale.value = currentLocal.value
-                fetchDefaultCity()
+                await fetchDefaultCity()
             }
         })
 
         async function fetchDefaultCity() {
             const cityName = await getCityByIP()
-            const defaultBlockId = weatherBlocks.value[0].id
+            const isBlockExist = weatherBlocks.value.find((block) => block.city?.name === cityName)
 
-            if (cityName) {
-                isLoading.value = true
-                try {
-                    const fetchedCity = await fetchCityWeatherByName(cityName, locale.value)
-                    setBlockCity(defaultBlockId, fetchedCity)
-                } finally {
-                    isLoading.value = false
+            if (!isBlockExist) {
+                const defaultBlockId = weatherBlocks.value[0].id
+
+                if (cityName) {
+                    isLoading.value = true
+                    try {
+                        const fetchedCity = await fetchCityWeatherByName(cityName, locale.value)
+                        setBlockCity(defaultBlockId, fetchedCity)
+                    } finally {
+                        isLoading.value = false
+                    }
                 }
             }
         }
