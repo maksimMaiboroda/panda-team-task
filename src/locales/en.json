@@ -18,7 +18,8 @@
         "temperatureChartTitle": "Temperature Chart"
     },
     "favoritesTab": {
-        "title": "Favorites"
+        "title": "Favorites",
+        "emptyTitle": "No cities have been added to favorites yet"
     },
     "preloader": {
         "loading": "Loading..."

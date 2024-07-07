@@ -20,21 +20,21 @@
             </nav>
         </header>
         <main>
-            <div class="tabs">
-                <button
-                    @click="setActiveTab('weather')"
-                    :class="{ active: activeTab === 'weather', 'weather-tab': true }"
-                >
-                    {{ $t('tabs.weather') }}
-                </button>
-                <button
-                    @click="setActiveTab('favorites')"
-                    :class="{ active: activeTab === 'favorites', 'favorite-tab': true }"
-                >
-                    {{ $t('tabs.favorites') }}
-                </button>
-            </div>
             <div class="container">
+                <div class="tabs">
+                    <button
+                        @click="setActiveTab('weather')"
+                        :class="{ active: activeTab === 'weather', 'weather-tab': true }"
+                    >
+                        {{ $t('tabs.weather') }}
+                    </button>
+                    <button
+                        @click="setActiveTab('favorites')"
+                        :class="{ active: activeTab === 'favorites', 'favorite-tab': true }"
+                    >
+                        {{ $t('tabs.favorites') }}
+                    </button>
+                </div>
                 <WeatherPreloader v-if="isLoadingWeather" />
                 <WeatherBlocks v-if="activeTab === 'weather'" :defaultCity="defaultCity" />
                 <FavoritesTab v-if="activeTab === 'favorites'" />
@@ -132,12 +132,14 @@ nav {
 
 .tabs {
     position: absolute;
-    top: -15px;
-    left: 30px;
+    top: -34px;
+    left: 7px;
+    height: 60px;
+    z-index: 0;
 }
 
 .tabs button {
-    padding: 10px 20px;
+    padding: 10px 20px 9px;
     border: none;
     background-color: #ddd;
     cursor: pointer;
@@ -159,6 +161,7 @@ nav {
 .container {
     width: 100%;
     max-width: 1200px;
+    position: relative;
 }
 
 .language-btn {

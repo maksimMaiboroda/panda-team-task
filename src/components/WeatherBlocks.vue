@@ -83,10 +83,10 @@ export default defineComponent({
             weatherStore.loadFromLocalStorage()
         })
 
-        watchEffect(async () => {
+        watchEffect(() => {
             if (currentLocal.value) {
                 locale.value = currentLocal.value
-                await fetchDefaultCity()
+                fetchDefaultCity()
             }
         })
 

@@ -18,7 +18,8 @@
         "temperatureChartTitle": "Графік температури"
     },
     "favoritesTab": {
-        "title": "Вибране"
+        "title": "Вибране",
+        "emptyTitle": "Поки що не додано ні одного міста в обране"
     },
     "preloader": {
         "loading": "Завантаження..."
