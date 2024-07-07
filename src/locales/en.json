@@ -1,0 +1,36 @@
+{
+    "app": {
+        "title": "Weather App"
+    },
+    "tabs": {
+        "weather": "Weather",
+        "favorites": "Favorites"
+    },
+    "weatherBlocks": {
+        "title": "Weather",
+        "5daysButton": "Show 5 Day Forecast",
+        "dailyButton": "Show Daily Forecast",
+        "addButton": "+",
+        "addToFavoritesButton": "Add to Favorites",
+        "removeFromFavoritesButton": "Remove from Favorites",
+        "removeBlockButton": "Remove Block",
+        "confirmDeletion": "Are you sure you want to remove this block?",
+        "temperatureChartTitle": "Temperature Chart"
+    },
+    "favoritesTab": {
+        "title": "Favorites",
+        "emptyTitle": "No cities have been added to favorites yet"
+    },
+    "preloader": {
+        "loading": "Loading..."
+    },
+    "cityAutocomplete": {
+        "placeholder": "Enter the name of the city"
+    },
+    "confirmModal": {
+        "title": "Confirm Deletion",
+        "message": "Are you sure you want to remove this block?",
+        "confirmBtn": "Yes",
+        "closeBtn": "No"
+    }
+}

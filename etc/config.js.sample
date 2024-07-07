@@ -1,0 +1,7 @@
+const APP_CONFIG = {
+    baseUrl: '',
+    apiKey: '',
+    geolocationToken: ''
+}
+
+export default APP_CONFIG
