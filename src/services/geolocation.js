@@ -1,6 +1,8 @@
+import config from '@/config'
+
 export async function getCityByIP() {
     try {
-        const response = await fetch('http://ip-api.com/json/')
+        const response = await fetch(`https://ipinfo.io/json?token=${config.geolocationToken}`)
         if (!response.ok) {
             throw new Error('Failed to fetch location')
         }
