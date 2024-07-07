@@ -39,7 +39,7 @@ main {
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 360px) {
     .weather-section {
         padding: 10px;
     }

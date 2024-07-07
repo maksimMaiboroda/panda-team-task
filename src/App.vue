@@ -21,6 +21,7 @@
                 </button>
             </div>
             <div class="container">
+                <WeatherPreloader v-if="isLoadingWeather" />
                 <WeatherBlocks v-if="activeTab === 'weather'" :defaultCity="defaultCity" />
                 <FavoritesTab v-if="activeTab === 'favorites'" />
             </div>
@@ -33,20 +34,25 @@ import { ref, onMounted } from 'vue'
 import { useWeatherStore } from './stores/weather'
 import WeatherBlocks from './components/WeatherBlocks.vue'
 import FavoritesTab from './components/FavoritesTab.vue'
+import WeatherPreloader from './components/WeatherPreloader.vue' // assuming WeatherPreloader component exists
 
 export default {
     name: 'App',
     components: {
         WeatherBlocks,
-        FavoritesTab
+        FavoritesTab,
+        WeatherPreloader
     },
     setup() {
         const weatherStore = useWeatherStore()
         const activeTab = ref('weather')
         const defaultCity = ref(null)
+        const isLoadingWeather = ref(false)
 
-        onMounted(() => {
-            weatherStore.loadFromLocalStorage()
+        onMounted(async () => {
+            isLoadingWeather.value = true
+            await weatherStore.loadFromLocalStorage()
+            isLoadingWeather.value = false
         })
 
         const setActiveTab = (tab) => {
@@ -56,7 +62,8 @@ export default {
         return {
             activeTab,
             setActiveTab,
-            defaultCity
+            defaultCity,
+            isLoadingWeather
         }
     }
 }

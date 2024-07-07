@@ -9,6 +9,7 @@
                 @toggle-day-night="toggleDayNightMode(block.id)"
             />
         </div>
+        <WeatherPreloader :isLoading="isLoading" />
     </div>
 </template>
 
@@ -16,19 +17,23 @@
 import { ref, computed, onMounted } from 'vue'
 import WeatherCard from './WeatherCard.vue'
 import { useWeatherStore } from '../stores/weather'
+import WeatherPreloader from './WeatherPreloader.vue'
 
 export default {
     name: 'FavoritesTab',
     components: {
-        WeatherCard
+        WeatherCard,
+        WeatherPreloader
     },
     setup() {
         const weatherStore = useWeatherStore()
         const favoriteCityBlocks = computed(() => weatherStore.favoriteCities)
-        const selectedCity = ref(null)
+        const isLoading = ref(false)
 
-        onMounted(() => {
-            weatherStore.loadFromLocalStorage()
+        onMounted(async () => {
+            isLoading.value = true
+            await weatherStore.loadFromLocalStorage()
+            isLoading.value = false
         })
 
         const toggleDayNightMode = (id) => {
@@ -40,8 +45,8 @@ export default {
 
         return {
             favoriteCityBlocks,
-            selectedCity,
-            toggleDayNightMode
+            toggleDayNightMode,
+            isLoading
         }
     }
 }
@@ -57,5 +62,12 @@ export default {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
+}
+
+.preloader {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 18px;
+    color: #666;
 }
 </style>

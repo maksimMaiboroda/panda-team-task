@@ -18,6 +18,7 @@
                     </li>
                 </ul>
             </div>
+            <WeatherPreloader :isLoading="isLoading" />
         </div>
     </div>
 </template>
@@ -25,9 +26,13 @@
 <script>
 import { ref } from 'vue'
 import { fetchCities } from '../services/ForecastService'
+import WeatherPreloader from './WeatherPreloader.vue'
 
 export default {
     name: 'CityAutocomplete',
+    components: {
+        WeatherPreloader
+    },
     props: {
         debounce: {
             type: Number,
@@ -48,13 +53,16 @@ export default {
         const query = ref('')
         const results = ref([])
         const showResults = ref(false)
+        const isLoading = ref(false)
         let debounceTimeout = null
 
         const handleSearchCities = async (value) => {
             if (value.length >= props.characters) {
+                isLoading.value = true
                 const res = await fetchCities(value)
                 results.value = res
                 showResults.value = true
+                isLoading.value = false
             } else {
                 results.value = []
                 showResults.value = false
@@ -90,7 +98,8 @@ export default {
             showResults,
             handleInput,
             handleFocus,
-            selectCity
+            selectCity,
+            isLoading
         }
     }
 }
@@ -193,5 +202,11 @@ button i {
 
 .results ul li:hover {
     background: #ececec;
+}
+
+@media (max-width: 360px) {
+    input {
+        font-size: 16px;
+    }
 }
 </style>

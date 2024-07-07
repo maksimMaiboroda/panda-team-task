@@ -1,5 +1,6 @@
 <template>
     <div class="weather-blocks">
+        <WeatherPreloader :isLoading="isLoading" />
         <div
             v-for="block in weatherBlocks"
             :key="block.id"
@@ -51,19 +52,22 @@ import { getCityByIP } from '../services/geolocation'
 import CityAutocomplete from './CityAutocomplete.vue'
 import WeatherCard from './WeatherCard.vue'
 import ConfirmModal from './ConfirmModal.vue'
+import WeatherPreloader from './WeatherPreloader.vue'
 
 export default defineComponent({
     name: 'WeatherBlocks',
     components: {
         CityAutocomplete,
         WeatherCard,
-        ConfirmModal
+        ConfirmModal,
+        WeatherPreloader
     },
     setup() {
         const weatherStore = useWeatherStore()
         const isModalVisible = ref(false)
         const selectedBlockId = ref(null)
         const weatherBlocks = ref(weatherStore.weatherBlocks)
+        const isLoading = ref(false)
 
         const isFavoriteBlock = computed(() => {
             const favoriteCityIds = new Set(
@@ -77,16 +81,26 @@ export default defineComponent({
             const defaultBlockId = weatherBlocks.value[0].id
 
             if (cityName) {
-                const fetchedCity = await fetchCityWeatherByName(cityName)
-                setBlockCity(defaultBlockId, fetchedCity)
+                isLoading.value = true
+                try {
+                    const fetchedCity = await fetchCityWeatherByName(cityName)
+                    setBlockCity(defaultBlockId, fetchedCity)
+                } finally {
+                    isLoading.value = false
+                }
             }
         })
 
         const setBlockCity = async (id, city) => {
-            const block = weatherBlocks.value.find((block) => block.id === id)
-            if (block) {
-                block.city = city
-                await fetchWeather(weatherBlocks.value.indexOf(block))
+            isLoading.value = true
+            try {
+                const block = weatherBlocks.value.find((block) => block.id === id)
+                if (block) {
+                    block.city = city
+                    await fetchWeather(weatherBlocks.value.indexOf(block))
+                }
+            } finally {
+                isLoading.value = false
             }
         }
 
@@ -155,7 +169,8 @@ export default defineComponent({
             removeBlock,
             isModalVisible,
             selectedBlockId,
-            isFavoriteBlock
+            isFavoriteBlock,
+            isLoading
         }
     }
 })
@@ -168,6 +183,7 @@ export default defineComponent({
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 8px;
+    position: relative; /* Added for Preloader positioning */
 }
 
 .favorite-block {

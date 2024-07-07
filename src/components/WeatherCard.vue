@@ -66,6 +66,8 @@ export default {
         const iconUrl = computed(
             () => `http://openweathermap.org/img/wn/${props.city.weather[0].icon}@2x.png`
         )
+
+        console.log({ iconUrl })
         const viewModeButtonText = computed(() =>
             props.viewMode === 'day' ? 'Show 5 Day Forecast' : 'Show Daily Forecast'
         )

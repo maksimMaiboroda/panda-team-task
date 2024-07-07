@@ -3,11 +3,13 @@ import config from '@/config'
 export async function fetchCities(value) {
     try {
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/find?q=${value}&appid=${config.API_KEY}`
+            `${config.baseUrl}/data/2.5/find?q=${value}&appid=${config.apiKey}`
         )
 
         const data = await response.json()
         const list = await data.list
+
+        console.log({ list })
 
         return list
     } catch (error) {
@@ -18,7 +20,7 @@ export async function fetchCities(value) {
 export async function fetchCityWeatherByName(city) {
     try {
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${config.API_KEY}`
+            `${config.baseUrl}/data/2.5/weather?q=${city}&appid=${config.apiKey}`
         )
         if (!response.ok) {
             throw new Error(`Error fetching weather data for city: ${response.statusText}`)
@@ -34,7 +36,7 @@ export async function fetchCityWeatherByName(city) {
 export async function fetchHourlyForecast(city) {
     try {
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${config.API_KEY}&units=metric`
+            `${config.baseUrl}/data/2.5/forecast?q=${city}&appid=${config.apiKey}&units=metric`
         )
         const data = await response.json()
         return data.list.map((item) => ({
@@ -50,7 +52,7 @@ export async function fetchHourlyForecast(city) {
 export async function fetch5DayForecast(city) {
     try {
         const response = await fetch(
-            `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${config.API_KEY}&units=metric`
+            `${config.baseUrl}/data/2.5/forecast?q=${city}&appid=${config.apiKey}&units=metric`
         )
         const data = await response.json()
         const groupedData = groupByDay(data.list)
@@ -63,8 +65,9 @@ export async function fetch5DayForecast(city) {
                     group.reduce((acc, cur) => acc + cur.main.temp_max, 0) / group.length
                 const avgTempNight =
                     group.reduce((acc, cur) => acc + cur.main.temp_min, 0) / group.length
+                const userLocale = navigator.language || 'en-US'
                 const dayData = {
-                    date: new Date(group[0].dt_txt).toLocaleDateString('en-US', {
+                    date: new Date(group[0].dt_txt).toLocaleDateString(userLocale, {
                         weekday: 'long',
                         month: 'short',
                         day: 'numeric'
