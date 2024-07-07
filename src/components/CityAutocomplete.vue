@@ -5,7 +5,7 @@
                 type="text"
                 name="search"
                 id="search"
-                placeholder="Enter the name of the city"
+                :placeholder="$t('cityAutocomplete.placeholder')"
                 autocomplete="chrome-off"
                 v-model="query"
                 @input="handleInput"
@@ -25,6 +25,7 @@
 
 <script>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { fetchCities } from '../services/ForecastService'
 import WeatherPreloader from './WeatherPreloader.vue'
 
@@ -50,6 +51,7 @@ export default {
         }
     },
     setup(props, { emit }) {
+        const { t } = useI18n()
         const query = ref('')
         const results = ref([])
         const showResults = ref(false)
@@ -93,6 +95,7 @@ export default {
         }
 
         return {
+            t,
             query,
             results,
             showResults,

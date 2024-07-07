@@ -1,0 +1,35 @@
+{
+    "app": {
+        "title": "Погодний додаток"
+    },
+    "tabs": {
+        "weather": "Погода",
+        "favorites": "Вибране"
+    },
+    "weatherBlocks": {
+        "title": "Погода",
+        "5daysButton": "Показати прогноз на 5 днів",
+        "dailyButton": "Показати прогноз на день",
+        "addButton": "+",
+        "addToFavoritesButton": "Додати до вибраного",
+        "removeFromFavoritesButton": "Видалити з вибраного",
+        "removeBlockButton": "Видалити блок",
+        "confirmDeletion": "Ви впевнені, що хочете видалити цей блок?",
+        "temperatureChartTitle": "Графік температури"
+    },
+    "favoritesTab": {
+        "title": "Вибране"
+    },
+    "preloader": {
+        "loading": "Завантаження..."
+    },
+    "cityAutocomplete": {
+        "placeholder": "Введіть назву міста"
+    },
+    "confirmModal": {
+        "title": "Підтвердити вилучення",
+        "message": "Ви справді бажаєте вилучити цей блок?",
+        "confirmBtn": "Так",
+        "closeBtn": "Ні"
+    }
+}

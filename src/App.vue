@@ -2,7 +2,21 @@
     <div class="app-wrapper">
         <header>
             <nav>
-                <h1>Weather App</h1>
+                <h1>{{ $t('app.title') }}</h1>
+                <div>
+                    <button
+                        @click="switchLanguage('en')"
+                        :class="{ active: currentLanguage === 'en', 'language-btn': true }"
+                    >
+                        English
+                    </button>
+                    <button
+                        @click="switchLanguage('uk')"
+                        :class="{ active: currentLanguage === 'uk', 'language-btn': true }"
+                    >
+                        Українська
+                    </button>
+                </div>
             </nav>
         </header>
         <main>
@@ -11,13 +25,13 @@
                     @click="setActiveTab('weather')"
                     :class="{ active: activeTab === 'weather', 'weather-tab': true }"
                 >
-                    Weather
+                    {{ $t('tabs.weather') }}
                 </button>
                 <button
                     @click="setActiveTab('favorites')"
                     :class="{ active: activeTab === 'favorites', 'favorite-tab': true }"
                 >
-                    Favorites
+                    {{ $t('tabs.favorites') }}
                 </button>
             </div>
             <div class="container">
@@ -31,10 +45,11 @@
 
 <script>
 import { ref, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useWeatherStore } from './stores/weather'
 import WeatherBlocks from './components/WeatherBlocks.vue'
 import FavoritesTab from './components/FavoritesTab.vue'
-import WeatherPreloader from './components/WeatherPreloader.vue' // assuming WeatherPreloader component exists
+import WeatherPreloader from './components/WeatherPreloader.vue'
 
 export default {
     name: 'App',
@@ -44,26 +59,45 @@ export default {
         WeatherPreloader
     },
     setup() {
+        const { t, locale } = useI18n()
         const weatherStore = useWeatherStore()
         const activeTab = ref('weather')
         const defaultCity = ref(null)
         const isLoadingWeather = ref(false)
+        const currentLanguage = ref('en')
 
-        onMounted(async () => {
-            isLoadingWeather.value = true
-            await weatherStore.loadFromLocalStorage()
-            isLoadingWeather.value = false
+        onMounted(() => {
+            loadLocaleFromStorage()
         })
+
+        function loadLocaleFromStorage() {
+            const storedLocale = localStorage.getItem('locale')
+            if (storedLocale) {
+                locale.value = storedLocale
+                weatherStore.setLanguage(locale.value)
+            }
+        }
 
         const setActiveTab = (tab) => {
             activeTab.value = tab
         }
 
+        const switchLanguage = (lang) => {
+            currentLanguage.value = lang
+            locale.value = lang
+
+            weatherStore.setLanguage(locale.value)
+            localStorage.setItem('locale', locale.value)
+        }
+
         return {
+            t,
             activeTab,
             setActiveTab,
             defaultCity,
-            isLoadingWeather
+            isLoadingWeather,
+            switchLanguage,
+            currentLanguage
         }
     }
 }
@@ -92,7 +126,7 @@ nav {
     z-index: 1000;
     background-color: #729096;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     padding: 20px 10px;
 }
 
@@ -125,5 +159,15 @@ nav {
 .container {
     width: 100%;
     max-width: 1200px;
+}
+
+.language-btn {
+    background-color: #6e7472;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    margin: 0 5px;
+    padding: 2px 4px;
+    box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

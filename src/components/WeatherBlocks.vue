@@ -6,7 +6,7 @@
             :key="block.id"
             :class="{ 'weather-block': true, 'favorite-block': isFavoriteBlock(block) }"
         >
-            <h2>Weather Block {{ block.name }}</h2>
+            <h2>{{ $t('weatherBlocks.title') }} {{ block.name }}</h2>
             <CityAutocomplete
                 @city-selected="setBlockCity(block.id, $event)"
                 v-model="block.city"
@@ -26,14 +26,14 @@
                 @click="confirmRemoveBlock(block.id)"
                 class="remove-button"
             >
-                Remove Block
+                {{ $t('weatherBlocks.removeBlockButton') }}
             </button>
         </div>
         <button v-if="weatherBlocks.length < 5" @click="addBlock" class="add-button">+</button>
         <ConfirmModal
             v-if="isModalVisible"
-            title="Confirm Deletion"
-            message="Are you sure you want to remove this block?"
+            :title="$t('confirmModal.title')"
+            :message="$t('confirmModal.message')"
             @close="isModalVisible = false"
             :onConfirm="removeBlock"
         />
@@ -41,7 +41,8 @@
 </template>
 
 <script>
-import { defineComponent, ref, onMounted, computed } from 'vue'
+import { defineComponent, ref, onMounted, computed, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useWeatherStore } from '../stores/weather'
 import {
     fetchHourlyForecast,
@@ -63,11 +64,13 @@ export default defineComponent({
         WeatherPreloader
     },
     setup() {
+        const { t, locale } = useI18n()
         const weatherStore = useWeatherStore()
         const isModalVisible = ref(false)
         const selectedBlockId = ref(null)
         const weatherBlocks = ref(weatherStore.weatherBlocks)
         const isLoading = ref(false)
+        const currentLocal = computed(() => weatherStore.getCurrentLocale())
 
         const isFavoriteBlock = computed(() => {
             const favoriteCityIds = new Set(
@@ -76,20 +79,32 @@ export default defineComponent({
             return (block) => favoriteCityIds.has(block.city?.id)
         })
 
-        onMounted(async () => {
+        onMounted(() => {
+            weatherStore.loadFromLocalStorage()
+            fetchDefaultCity()
+        })
+
+        watchEffect(() => {
+            if (currentLocal.value) {
+                locale.value = currentLocal.value
+                fetchDefaultCity()
+            }
+        })
+
+        async function fetchDefaultCity() {
             const cityName = await getCityByIP()
             const defaultBlockId = weatherBlocks.value[0].id
 
             if (cityName) {
                 isLoading.value = true
                 try {
-                    const fetchedCity = await fetchCityWeatherByName(cityName)
+                    const fetchedCity = await fetchCityWeatherByName(cityName, locale.value)
                     setBlockCity(defaultBlockId, fetchedCity)
                 } finally {
                     isLoading.value = false
                 }
             }
-        })
+        }
 
         const setBlockCity = async (id, city) => {
             isLoading.value = true
@@ -116,7 +131,8 @@ export default defineComponent({
         const fetchBlockHourlyData = async (index) => {
             try {
                 weatherBlocks.value[index].hourlyData = await fetchHourlyForecast(
-                    weatherBlocks.value[index].city.name
+                    weatherBlocks.value[index].city.name,
+                    locale.value
                 )
             } catch (error) {
                 console.error('Error fetching hourly forecast for block:', error)
@@ -126,7 +142,8 @@ export default defineComponent({
         const fetchBlock5DayForecast = async (index) => {
             try {
                 weatherBlocks.value[index].dailyData = await fetch5DayForecast(
-                    weatherBlocks.value[index].city.name
+                    weatherBlocks.value[index].city.name,
+                    locale.value
                 )
             } catch (error) {
                 console.error('Error fetching 5-day forecast for block:', error)
@@ -160,6 +177,7 @@ export default defineComponent({
         }
 
         return {
+            t,
             weatherBlocks,
             setBlockCity,
             fetchWeather,
@@ -170,7 +188,8 @@ export default defineComponent({
             isModalVisible,
             selectedBlockId,
             isFavoriteBlock,
-            isLoading
+            isLoading,
+            currentLocal
         }
     }
 })

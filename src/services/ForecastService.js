@@ -1,26 +1,25 @@
 import config from '@/config'
 
-export async function fetchCities(value) {
+export async function fetchCities(value, lang = 'ua') {
     try {
         const response = await fetch(
-            `${config.baseUrl}/data/2.5/find?q=${value}&appid=${config.apiKey}`
+            `${config.baseUrl}/data/2.5/find?q=${value}&appid=${config.apiKey}&lang=${lang}`
         )
 
         const data = await response.json()
-        const list = await data.list
-
-        console.log({ list })
+        const list = data.list
 
         return list
     } catch (error) {
         console.error('Error fetching cities', error)
+        throw error
     }
 }
 
-export async function fetchCityWeatherByName(city) {
+export async function fetchCityWeatherByName(city, lang = 'en') {
     try {
         const response = await fetch(
-            `${config.baseUrl}/data/2.5/weather?q=${city}&appid=${config.apiKey}`
+            `${config.baseUrl}/data/2.5/weather?q=${city}&appid=${config.apiKey}&lang=${lang}`
         )
         if (!response.ok) {
             throw new Error(`Error fetching weather data for city: ${response.statusText}`)
@@ -33,10 +32,10 @@ export async function fetchCityWeatherByName(city) {
     }
 }
 
-export async function fetchHourlyForecast(city) {
+export async function fetchHourlyForecast(city, lang = 'en') {
     try {
         const response = await fetch(
-            `${config.baseUrl}/data/2.5/forecast?q=${city}&appid=${config.apiKey}&units=metric`
+            `${config.baseUrl}/data/2.5/forecast?q=${city}&appid=${config.apiKey}&units=metric&lang=${lang}`
         )
         const data = await response.json()
         return data.list.map((item) => ({
@@ -49,10 +48,10 @@ export async function fetchHourlyForecast(city) {
     }
 }
 
-export async function fetch5DayForecast(city) {
+export async function fetch5DayForecast(city, lang = 'en') {
     try {
         const response = await fetch(
-            `${config.baseUrl}/data/2.5/forecast?q=${city}&appid=${config.apiKey}&units=metric`
+            `${config.baseUrl}/data/2.5/forecast?q=${city}&appid=${config.apiKey}&units=metric&lang=${lang}`
         )
         const data = await response.json()
         const groupedData = groupByDay(data.list)

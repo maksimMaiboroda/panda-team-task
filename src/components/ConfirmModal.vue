@@ -3,14 +3,19 @@
         <div class="modal">
             <h3 class="modal-title">{{ title }}</h3>
             <p class="modal-description">{{ message }}</p>
-            <button class="agree-btn" @click="confirm">Yes</button>
-            <button class="disagree-btn" @click="close">No</button>
+            <button class="confirm-btn" @click="handleConfirm">
+                {{ $t('confirmModal.confirmBtn') }}
+            </button>
+            <button class="close-btn" @click="close">{{ $t('confirmModal.closeBtn') }}</button>
         </div>
     </div>
 </template>
 
 <script>
-export default {
+import { defineComponent } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+export default defineComponent({
     name: 'ConfirmModal',
     props: {
         title: {
@@ -26,16 +31,25 @@ export default {
             required: true
         }
     },
-    methods: {
-        close() {
-            this.$emit('close')
-        },
-        confirm() {
-            this.onConfirm()
-            this.close()
+    setup(props, { emit }) {
+        const { t } = useI18n()
+
+        const close = () => {
+            emit('close')
+        }
+
+        const handleConfirm = () => {
+            props.onConfirm()
+            close()
+        }
+
+        return {
+            t,
+            close,
+            handleConfirm
         }
     }
-}
+})
 </script>
 
 <style scoped>
@@ -73,11 +87,11 @@ button {
     border-radius: 4px;
 }
 
-.agree-btn {
+.confirm-btn {
     background-color: #4caf50;
 }
 
-.disagree-btn {
+.close-btn {
     background-color: #f44336;
 }
 </style>

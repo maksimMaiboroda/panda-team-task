@@ -1,12 +1,13 @@
 <template>
     <div class="temperature-chart">
-        <h2 class="chart-title">Temperature Chart</h2>
+        <h2 class="chart-title">{{ t('weatherBlocks.temperatureChartTitle') }}</h2>
         <canvas :id="chartId"></canvas>
     </div>
 </template>
 
 <script>
 import { onMounted, watch, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Chart from 'chart.js/auto'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -19,6 +20,7 @@ export default {
         }
     },
     setup(props) {
+        const { t } = useI18n()
         const chart = ref(null)
         const chartId = ref(uuidv4())
 
@@ -56,6 +58,7 @@ export default {
         })
 
         return {
+            t,
             chartId
         }
     }

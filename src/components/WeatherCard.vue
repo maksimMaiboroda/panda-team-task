@@ -8,8 +8,12 @@
         </div>
 
         <button @click="toggleDayNightMode">{{ viewModeButtonText }}</button>
-        <button v-if="tab !== 'favorite'" @click="addToFavorites">Add to Favorites</button>
-        <button @click="removeFromFavorites">Remove from Favorites</button>
+        <button v-if="tab !== 'favorite'" @click="addToFavorites">
+            {{ t('weatherBlocks.addToFavoritesButton') }}
+        </button>
+        <button @click="removeFromFavorites">
+            {{ t('weatherBlocks.removeFromFavoritesButton') }}
+        </button>
     </div>
 
     <TemperatureChart
@@ -32,6 +36,7 @@
 
 <script>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useWeatherStore } from '../stores/weather'
 import TemperatureChart from './TemperatureChart.vue'
 
@@ -60,6 +65,7 @@ export default {
     },
     emits: ['toggle-day-night'],
     setup(props, { emit }) {
+        const { t } = useI18n()
         const weatherStore = useWeatherStore()
         const temperature = computed(() => (props.city.main.temp - 273.15).toFixed(2))
         const weatherDescription = computed(() => props.city.weather[0].description)
@@ -67,9 +73,10 @@ export default {
             () => `http://openweathermap.org/img/wn/${props.city.weather[0].icon}@2x.png`
         )
 
-        console.log({ iconUrl })
         const viewModeButtonText = computed(() =>
-            props.viewMode === 'day' ? 'Show 5 Day Forecast' : 'Show Daily Forecast'
+            props.viewMode === 'day'
+                ? t('weatherBlocks.5daysButton')
+                : t('weatherBlocks.dailyButton')
         )
 
         const toggleDayNightMode = () => {
@@ -89,6 +96,7 @@ export default {
         }
 
         return {
+            t,
             temperature,
             weatherDescription,
             iconUrl,

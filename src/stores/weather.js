@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { v4 as uuidv4 } from 'uuid'
+// import { useI18n } from 'vue-i18n'
 
 const INITIAL_WEATHER_BLOCK = {
     city: null,
@@ -17,7 +18,8 @@ export const useWeatherStore = defineStore({
                 ...INITIAL_WEATHER_BLOCK
             }
         ],
-        favoriteCities: []
+        favoriteCities: [],
+        locale: localStorage.getItem('locale') || 'en'
     }),
     actions: {
         addBlock() {
@@ -56,6 +58,17 @@ export const useWeatherStore = defineStore({
         },
         saveToLocalStorage() {
             localStorage.setItem('favoriteCities', JSON.stringify(this.favoriteCities))
+        },
+        setLanguage(locale) {
+            if (['en', 'uk'].includes(locale)) {
+                this.locale = locale
+                localStorage.setItem('language', locale)
+            } else {
+                console.warn(`Unsupported language: ${locale}`)
+            }
+        },
+        getCurrentLocale() {
+            return this.locale
         }
     }
 })
